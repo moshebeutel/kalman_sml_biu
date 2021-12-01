@@ -53,19 +53,31 @@ for t in range(num_of_samples):
 	predictions.append(z_t_tMinus1)
 	corrections.append(z_t_t)
 
-
+np_predictions = np.array(predictions).reshape(100,2)
+np_corrections = np.array(corrections).reshape(100,2)
 # plot 
 fig, axs = plt.subplots(2, 1)
 axs[0].scatter(range(num_of_samples),z[0,:], label='Ground True - Positions')
 axs[0].scatter(range(num_of_samples),x, label='Observations')
-axs[0].scatter(range(num_of_samples),np.array(predictions).reshape(100,2)[:,0], label='Kalman Filter Predictions')
-axs[0].scatter(range(num_of_samples),np.array(corrections).reshape(100,2)[:,0], label= 'Kalman Filter Corrections')
+axs[0].scatter(range(num_of_samples),np_predictions[:,0], label='Kalman Filter Predictions')
+axs[0].scatter(range(num_of_samples),np_corrections[:,0], label= 'Kalman Filter Corrections')
 axs[0].legend()
 axs[0].grid(True)
 axs[1].scatter(range(num_of_samples),z[1,:], label='Ground True - Velocities')
-axs[1].scatter(range(num_of_samples),np.array(predictions).reshape(100,2)[:,1], label='Kalman Filter Predictions Velocities')
-axs[1].scatter(range(num_of_samples),np.array(corrections).reshape(100,2)[:,1], label= 'Kalman Filter Corrections Velocities')
+axs[1].scatter(range(num_of_samples),np_predictions[:,1], label='Kalman Filter Predictions Velocities')
+axs[1].scatter(range(num_of_samples),np_corrections[:,1], label= 'Kalman Filter Corrections Velocities')
 axs[1].legend()
 axs[1].grid(True)
 fig.tight_layout()
 plt.show()
+
+#metrics
+T=num_of_samples
+mse_observations = np.mean(np.square(x-z[0,:]))
+mse_Kalman = np.mean(np.square(np_corrections[:,0] - z[0,:]))
+print('***Metrics****')
+print('mse observations', mse_observations)
+print('mse_Kalman', mse_Kalman)
+conclusion_str = 'Kalman is better estimations than directly using observations' if mse_Kalman < mse_observations \
+	else 'Directly using observations is better than Kalman'
+print(conclusion_str)
